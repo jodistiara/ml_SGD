@@ -6,8 +6,6 @@ import math
 #DEFINE INITIAL VARIABLES
 newteta = np.array([0.3,0.6,0.9,0.2])
 newbias = np.array([0.5])
-teta = newteta.copy()
-bias = newbias.copy()
 alpha = 0.8
 epoch = 60
 trainerror = np.zeros(epoch)
@@ -59,7 +57,11 @@ for n in range(epoch):
 
     #TRAIN
     totalerror = 0
-    for i in range(len(traindata[0])):
+    # for i in range(1):
+    # print("teta: ", newteta)
+    # print("bias: ", newbias)
+
+    for i in range(len(traindata)):
 
         teta = newteta.copy()
         bias = newbias.copy()
@@ -69,8 +71,7 @@ for n in range(epoch):
         pred = predict(sigm)
 
         localerror = local_error(sigm, trainlabel[i])
-        # print("teta: ", teta)
-        # print("bias: ", bias)
+        
         dteta = np.zeros(4)
         dbias = np.zeros(1)
 
@@ -82,43 +83,39 @@ for n in range(epoch):
             newteta[k] = teta[k] - (alpha*dteta[k])
 
         newbias = bias - (alpha*dbias)
-
-        # print("h: ", h)
-        # print("sigmoid: ", sigm)
-        # print("predict: ", pred)
-        # print("fact: ", fact)
-        # print("local error: ", localerror)
-        # print("dteta: ", dteta)
-        # print("dbias: ", dbias)
-        # print("---------------------------------")
+        
         totalerror = totalerror + localerror
 
-    trainerror[n] = totalerror
-    # print("error[", n, "]: ", error[n])
+    trainerror[n] = totalerror/len(traindata)
+
+    # print("h: ", h)
+    # print("sigmoid: ", sigm)
+    # print("predict: ", pred)
+    # print("fact: ", testlabel[i])
+    # print("local error: ", localerror)
+    # print("dteta: ", dteta)
+    # print("dbias: ", dbias)
+    # print("newteta: ", newteta)
+    # print("newbias: ", newbias)
+
+    # print("total error: ", totalerror)
+    # print("error[", n, "]: ", trainerror[n])
+    # print("---------------------------------")
+
 
     #TEST
     totalerror = 0
-    for i in range(len(testdata[0])):
+    for i in range(len(testdata)):
         
         h = fungsiH(testdata[i,:],newteta,newbias)
         sigm = sigmoid(h)
         pred = predict(sigm)
 
         localerror = local_error(sigm, testlabel[i])
-        # print("teta: ", teta)
-        # print("bias: ", bias)
-        # print("h: ", h)
-        # print("sigmoid: ", sigm)
-        # print("predict: ", pred)
-        # print("fact: ", fact)
-        # print("local error: ", localerror)
-        # print("dteta: ", dteta)
-        # print("dbias: ", dbias)
-        # print("---------------------------------")
+
         totalerror = totalerror + localerror
 
-    testerror[n] = totalerror
-
+    testerror[n] = totalerror/len(testerror)
 
 x = np.arange(epoch)
 y1 = trainerror.copy()
@@ -129,5 +126,7 @@ plt.plot(x,y1, color="green")
 plt.plot(x,y2, color="red")
 plt.xlabel("Epoch")
 plt.ylabel("Error")
-plt.title("Grafik Error per Epoch")
+plt.title("Grafik Error setiap Epoch")
+plt.legend(["Data Training", "Data Validation"])
+plt.grid()
 plt.show()
